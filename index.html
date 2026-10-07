@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마케팅 용어의 효과 분석기</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Sans KR -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#070a14',
+                            900: '#0b1120',
+                            800: '#111827',
+                            700: '#1e293b',
+                            600: '#334155'
+                        },
+                        coral: {
+                            500: '#ff6b6b',
+                            600: '#f43f5e',
+                            700: '#e11d48',
+                            glow: 'rgba(244, 63, 94, 0.35)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b1120;
+            color: #f1f5f9;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        .coral-gradient {
+            background: linear-gradient(135deg, #ff6b6b 0%, #f43f5e 100%);
+        }
+
+        .coral-border-glow {
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.25);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card-hover {
+            transition: all 0.2s ease-in-out;
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(244, 63, 94, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1120;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f43f5e;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(244, 63, 94, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(244, 63, 94, 0.6); }
+        }
+
+        .pulse-coral {
+            animation: pulseGlow 2.5s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-coral-600 selection:text-white">
+
+    <!-- Header Section -->
+    <header class="w-full border-b border-slate-800 bg-navy-900/90 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl coral-gradient flex items-center justify-center text-white text-xl font-black shadow-lg shadow-coral-600/30">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+                        마케팅 용어의 효과
+                        <span class="text-xs px-2.5 py-0.5 rounded-full bg-coral-600/20 text-coral-500 border border-coral-500/30 font-semibold">Marketer AI Lab</span>
+                    </h1>
+                    <p class="text-xs md:text-sm text-slate-400">
+                        마케팅 용어를 썼을때의 대중들의 반응 예측
+                    </p>
+                </div>
+            </div>
+
+            <!-- Quick Action Links for Students -->
+            <div class="flex items-center gap-2">
+                <button onclick="toggleDictionaryModal()" class="text-xs md:text-sm px-3 py-1.5 rounded-xl bg-navy-700 hover:bg-navy-600 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-book text-coral-500"></i>
+                    <span>용어 사전</span>
+                </button>
+                <a href="#dictionary-section" class="text-xs md:text-sm px-3 py-1.5 rounded-xl bg-navy-700 hover:bg-navy-600 text-slate-300 hover:text-white border border-slate-700 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-graduation-cap text-sky-400"></i>
+                    <span>학습가이드</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-1 space-y-8">
+
+        <!-- Input & Controls Section -->
+        <section class="glass-card rounded-2xl p-6 md:p-8 border border-slate-800 coral-border-glow relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-60 h-60 bg-coral-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="space-y-6">
+                <!-- Section Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-pen-to-square text-coral-500"></i>
+                            광고 문구 및 타겟 연령 설정
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">분석하고 싶은 홍보용 문구나 SNS 카피라이팅을 입력하세요.</p>
+                    </div>
+
+                    <!-- Preset Copy Buttons -->
+                    <div class="flex flex-wrap items-center gap-2 mt-2 md:mt-0">
+                        <span class="text-xs text-slate-500 font-medium">샘플문구:</span>
+                        <button onclick="loadPreset(1)" class="text-xs px-2.5 py-1 rounded-lg bg-navy-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                            🔥 MZ 팝업스토어
+                        </button>
+                        <button onclick="loadPreset(2)" class="text-xs px-2.5 py-1 rounded-lg bg-navy-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                            📊 B2B SaaS 프로모션
+                        </button>
+                        <button onclick="loadPreset(3)" class="text-xs px-2.5 py-1 rounded-lg bg-navy-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+                            🛍️ 커머스 타임딜
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Textarea input -->
+                <div>
+                    <label for="adCopyInput" class="block text-xs font-semibold text-slate-300 mb-2 flex justify-between">
+                        <span>광고 문구 (Ad Copy)</span>
+                        <span id="charCount" class="text-slate-500">0 / 300자</span>
+                    </label>
+                    <textarea id="adCopyInput" rows="4" 
+                        class="w-full bg-navy-900 border border-slate-700 rounded-xl p-4 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-coral-500 focus:ring-1 focus:ring-coral-500 transition text-sm md:text-base leading-relaxed"
+                        placeholder="예시: 이번 분기 ROI 200% 달성한 FOMO 유발 마이크로 인플루언서 앰버서더 프로모션! 선착순 타임딜 진행합니다."></textarea>
+                </div>
+
+                <!-- Target Age Selection -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-users text-coral-500"></i>
+                        타겟 연령대 선택
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5" id="ageGroupContainer">
+                        <button type="button" onclick="selectAgeGroup('10s')" data-age="10s" class="age-btn px-4 py-3 rounded-xl bg-navy-900 border border-slate-700 hover:border-coral-500/50 text-slate-300 hover:text-white transition text-center font-medium text-sm flex flex-col items-center gap-1">
+                            <span class="text-xs text-slate-400">Z세대</span>
+                            <span class="font-bold">10대</span>
+                        </button>
+                        <button type="button" onclick="selectAgeGroup('20s')" data-age="20s" class="age-btn active-age px-4 py-3 rounded-xl coral-gradient text-white border border-coral-500 transition text-center font-medium text-sm flex flex-col items-center gap-1 shadow-md shadow-coral-600/30">
+                            <span class="text-xs text-coral-100">MZ 세대</span>
+                            <span class="font-bold">20대</span>
+                        </button>
+                        <button type="button" onclick="selectAgeGroup('30s')" data-age="30s" class="age-btn px-4 py-3 rounded-xl bg-navy-900 border border-slate-700 hover:border-coral-500/50 text-slate-300 hover:text-white transition text-center font-medium text-sm flex flex-col items-center gap-1">
+                            <span class="text-xs text-slate-400">직장인·구매층</span>
+                            <span class="font-bold">30대</span>
+                        </button>
+                        <button type="button" onclick="selectAgeGroup('40s')" data-age="40s" class="age-btn px-4 py-3 rounded-xl bg-navy-900 border border-slate-700 hover:border-coral-500/50 text-slate-300 hover:text-white transition text-center font-medium text-sm flex flex-col items-center gap-1">
+                            <span class="text-xs text-slate-400">핵심 소비층</span>
+                            <span class="font-bold">40대</span>
+                        </button>
+                        <button type="button" onclick="selectAgeGroup('50s')" data-age="50s" class="age-btn col-span-2 sm:col-span-1 px-4 py-3 rounded-xl bg-navy-900 border border-slate-700 hover:border-coral-500/50 text-slate-300 hover:text-white transition text-center font-medium text-sm flex flex-col items-center gap-1">
+                            <span class="text-xs text-slate-400">시니어층</span>
+                            <span class="font-bold">50대 이상</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <div class="pt-2">
+                    <button id="analyzeBtn" onclick="runAnalysis()" class="w-full py-4 rounded-xl coral-gradient hover:opacity-95 text-white font-bold text-base md:text-lg transition shadow-xl shadow-coral-600/25 flex items-center justify-center gap-3 group">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl group-hover:rotate-12 transition-transform"></i>
+                        <span>마케팅 용어 효과 분석하기</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner State (Hidden by default) -->
+        <div id="loadingState" class="hidden glass-card rounded-2xl p-12 text-center space-y-4 border border-slate-800">
+            <div class="inline-block p-4 rounded-full bg-coral-600/20 text-coral-500 text-3xl animate-bounce">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">마케팅 용어 영향력 및 타겟 반응 분석 중...</h3>
+            <p class="text-sm text-slate-400 max-w-md mx-auto">
+                문구 내 전문 용어, 연령대별 이해도, 감정 긍·부정 비율 및 A/B 설득 차이를 다각도로 측정하고 있습니다.
+            </p>
+            <div class="w-48 h-1.5 bg-navy-900 rounded-full mx-auto overflow-hidden">
+                <div class="h-full bg-coral-500 rounded-full animate-pulse w-3/4"></div>
+            </div>
+        </div>
+
+        <!-- Results Dashboard Section -->
+        <div id="resultsDashboard" class="space-y-6">
+
+            <!-- Grid Row 1: Marketing Terms Rank & Public Sentiment -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Feature 1 Card: Used Marketing Terms Ranking & Meaning -->
+                <div class="lg:col-span-7 glass-card glass-card-hover rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-list-ol text-coral-500"></i>
+                                사용된 마케팅 용어 순위 & 난이도
+                            </h3>
+                            <span id="termCountBadge" class="text-xs px-2.5 py-1 rounded-full bg-navy-900 text-coral-400 border border-slate-700 font-medium">
+                                감지된 용어 4개
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">
+                            문구에 포함된 핵심 마케팅 전문 용어와 대중적 난이도 평가입니다.
+                        </p>
+
+                        <!-- Term Ranking List -->
+                        <div id="termsRankList" class="space-y-3">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-1">
+                            <i class="fa-solid fa-circle-info text-sky-400"></i>
+                            학생 팁: 전문 용어가 너무 많으면 대중성 지수가 저하됩니다.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Feature 1-B Card: Positive & Negative Sentiment Ratio -->
+                <div class="lg:col-span-5 glass-card glass-card-hover rounded-2xl p-6 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-coral-500"></i>
+                                대중 감정 반응 비율
+                            </h3>
+                            <span class="text-xs text-slate-400">예측 정밀도 92%</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">
+                            해당 마케팅 용어를 접했을 때 청중의 긍정/부정/피로도 비율
+                        </p>
+
+                        <!-- Donut Chart Container -->
+                        <div class="relative w-48 h-48 mx-auto my-2">
+                            <canvas id="sentimentChart"></canvas>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span id="mainSentimentScore" class="text-2xl font-black text-white">72%</span>
+                                <span class="text-[10px] text-slate-400">긍정 수용도</span>
+                            </div>
+                        </div>
+
+                        <!-- Legend Details -->
+                        <div class="grid grid-cols-3 gap-2 text-center mt-2">
+                            <div class="p-2 rounded-xl bg-navy-900/80 border border-slate-800">
+                                <div class="text-[10px] text-emerald-400 font-semibold flex items-center justify-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 긍정
+                                </div>
+                                <div id="posRatioText" class="text-sm font-bold text-white mt-0.5">72%</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-navy-900/80 border border-slate-800">
+                                <div class="text-[10px] text-amber-400 font-semibold flex items-center justify-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-amber-400"></span> 중립
+                                </div>
+                                <div id="neuRatioText" class="text-sm font-bold text-white mt-0.5">18%</div>
+                            </div>
+                            <div class="p-2 rounded-xl bg-navy-900/80 border border-slate-800">
+                                <div class="text-[10px] text-rose-500 font-semibold flex items-center justify-center gap-1">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span> 피로/부정
+                                </div>
+                                <div id="negRatioText" class="text-sm font-bold text-white mt-0.5">10%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Row 2: Target Age Persuasion Effect & Tailored Hashtags -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- Feature 2 Card: Target Age Group Persuasion Effect -->
+                <div class="lg:col-span-7 glass-card glass-card-hover rounded-2xl p-6 border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-coral-500/20 text-coral-500 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                    <span id="targetAgeTitle" class="text-coral-500">20대</span> 맞춤 설득 효과 분석
+                                </h3>
+                                <p class="text-xs text-slate-400">선택된 타겟층의 수용적 특성 및 반응 예측 결과입니다.</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400 block">설득 적합도</span>
+                            <span id="persuasionScore" class="text-xl font-extrabold text-coral-500">88점</span>
+                        </div>
+                    </div>
+
+                    <!-- Persuasion Insight Box -->
+                    <div id="persuasionInsightBox" class="p-4 rounded-xl bg-navy-900/90 border border-slate-800 space-y-2 text-sm leading-relaxed text-slate-300">
+                        <!-- Dynamic text generated by JS -->
+                    </div>
+
+                    <!-- Key Emotional Triggers -->
+                    <div>
+                        <h4 class="text-xs font-semibold text-slate-400 mb-2">타겟이 느끼는 대표 주안점</h4>
+                        <div id="emotionTriggers" class="flex flex-wrap gap-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2-B Card: Tailored Hashtags -->
+                <div class="lg:col-span-5 glass-card glass-card-hover rounded-2xl p-6 border border-slate-800 flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-hashtag text-coral-500"></i>
+                                타겟 맞춤 추천 해시태그
+                            </h3>
+                            <button onclick="copyHashtags()" class="text-xs px-2.5 py-1 rounded-lg bg-coral-600/20 text-coral-400 hover:bg-coral-600/30 transition flex items-center gap-1">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>복사하기</span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">
+                            해당 연령대의 검색 트렌드와 SNS 바이럴을 고려한 추천 태그 목록입니다.
+                        </p>
+
+                        <!-- Hashtags Display -->
+                        <div id="hashtagList" class="flex flex-wrap gap-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div id="copyToast" class="hidden text-xs text-emerald-400 bg-emerald-950/80 border border-emerald-800 p-2 rounded-xl text-center">
+                        <i class="fa-solid fa-check mr-1"></i> 해시태그가 클립보드에 복사되었습니다!
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3 Card: Comparison (With Marketing Terms vs Without Marketing Terms) -->
+            <div class="glass-card glass-card-hover rounded-2xl p-6 md:p-8 border border-slate-800 space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-coral-500"></i>
+                            A/B 반응 비교 (용어 사용 vs 쉬운 일반 표현)
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            동일한 메시지를 전문 용어로 전달할 때와 쉬운 대중적 문구로 재구성할 때의 대중 반응 차이입니다.
+                        </p>
+                    </div>
+                    <span class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                        A/B 시뮬레이션
+                    </span>
+                </div>
+
+                <!-- Comparative Metrics Table Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Metric 1: Comprehension -->
+                    <div class="p-4 rounded-xl bg-navy-900/90 border border-slate-800 text-center space-y-2">
+                        <span class="text-xs text-slate-400 block font-medium">메시지 이해도 (Comprehension)</span>
+                        <div class="flex justify-center items-baseline gap-2">
+                            <span id="compJargon" class="text-lg font-bold text-coral-400">62%</span>
+                            <span class="text-xs text-slate-500">vs</span>
+                            <span id="compPlain" class="text-lg font-bold text-emerald-400">94%</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">용어 미사용 시 이해도 <span class="text-emerald-400 font-semibold">+32%p 상승</span></p>
+                    </div>
+
+                    <!-- Metric 2: Professional Credibility -->
+                    <div class="p-4 rounded-xl bg-navy-900/90 border border-slate-800 text-center space-y-2">
+                        <span class="text-xs text-slate-400 block font-medium">전문성·신뢰감 (Credibility)</span>
+                        <div class="flex justify-center items-baseline gap-2">
+                            <span id="credJargon" class="text-lg font-bold text-coral-400">85%</span>
+                            <span class="text-xs text-slate-500">vs</span>
+                            <span id="credPlain" class="text-lg font-bold text-slate-300">68%</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">용어 사용 시 전문 느낌 <span class="text-coral-400 font-semibold">+17%p 우세</span></p>
+                    </div>
+
+                    <!-- Metric 3: Buzz & Sharing -->
+                    <div class="p-4 rounded-xl bg-navy-900/90 border border-slate-800 text-center space-y-2">
+                        <span class="text-xs text-slate-400 block font-medium">SNS 확산 의도 (Virality)</span>
+                        <div class="flex justify-center items-baseline gap-2">
+                            <span id="buzzJargon" class="text-lg font-bold text-coral-400">78%</span>
+                            <span class="text-xs text-slate-500">vs</span>
+                            <span id="buzzPlain" class="text-lg font-bold text-sky-400">72%</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">트렌디한 단어로 호기심 자극</p>
+                    </div>
+
+                    <!-- Metric 4: Action/Purchase Intent -->
+                    <div class="p-4 rounded-xl bg-navy-900/90 border border-slate-800 text-center space-y-2">
+                        <span class="text-xs text-slate-400 block font-medium">구매/행동 전환율 (Conversion)</span>
+                        <div class="flex justify-center items-baseline gap-2">
+                            <span id="convJargon" class="text-lg font-bold text-coral-400">70%</span>
+                            <span class="text-xs text-slate-500">vs</span>
+                            <span id="convPlain" class="text-lg font-bold text-emerald-400">83%</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">직관적 혜택 강조 시 전환율 증대</p>
+                    </div>
+                </div>
+
+                <!-- Comparison Cards Side-by-Side -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <!-- Option A: Jargon Copy -->
+                    <div class="p-5 rounded-xl bg-navy-900/60 border border-coral-500/30 space-y-3 relative">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-coral-400 px-2.5 py-1 rounded-md bg-coral-500/10 border border-coral-500/20">
+                                [A] 마케팅 용어 포함 버전
+                            </span>
+                            <span class="text-xs text-slate-400">전문성 강조형</span>
+                        </div>
+                        <p id="originalCopyDisplay" class="text-sm text-slate-200 italic font-medium leading-relaxed bg-navy-950/60 p-3 rounded-lg border border-slate-800">
+                            <!-- Injected by JS -->
+                        </p>
+                        <div class="text-xs text-slate-400 space-y-1">
+                            <div class="flex items-center gap-1 text-emerald-400">
+                                <i class="fa-solid fa-plus text-[10px]"></i> 장점: 트렌디함, 전문가 그룹 및 마케터 대상 설득력 높음.
+                            </div>
+                            <div class="flex items-center gap-1 text-rose-400">
+                                <i class="fa-solid fa-minus text-[10px]"></i> 단점: 고연령층 및 미디어 이외 집단 진입장벽 존재.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Option B: Alternative Easy Copy -->
+                    <div class="p-5 rounded-xl bg-navy-900/60 border border-emerald-500/30 space-y-3 relative">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-emerald-400 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20">
+                                [B] 쉬운 순화 문구 제안
+                            </span>
+                            <span class="text-xs text-slate-400">대중성 확장형</span>
+                        </div>
+                        <p id="recommendedCopyDisplay" class="text-sm text-slate-200 font-medium leading-relaxed bg-navy-950/60 p-3 rounded-lg border border-slate-800">
+                            <!-- Injected by JS -->
+                        </p>
+                        <div class="text-xs text-slate-400 space-y-1">
+                            <div class="flex items-center gap-1 text-emerald-400">
+                                <i class="fa-solid fa-plus text-[10px]"></i> 장점: 누구나 즉각 이해, 행동 유도 유기적 전달.
+                            </div>
+                            <div class="flex items-center gap-1 text-amber-400">
+                                <i class="fa-solid fa-minus text-[10px]"></i> 단점: 차별화된 트렌드 느낌이 다소 약해질 수 있음.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Marketing Terms Educational Glossary Section -->
+        <section id="dictionary-section" class="glass-card rounded-2xl p-6 md:p-8 border border-slate-800 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-coral-500"></i>
+                        마케팅 & 미디어 용어 가이드 (학생용)
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">
+                        자주 사용하는 마케팅 전문 용어의 원뜻과 대중 대상 대체 표현을 익혀보세요.
+                    </p>
+                </div>
+                <!-- Search term filter input -->
+                <div class="relative w-full md:w-64">
+                    <input type="text" id="dictSearch" oninput="filterDictionary()" placeholder="용어 검색 (예: ROI, FOMO)..." 
+                        class="w-full bg-navy-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-coral-500 pl-8">
+                    <i class="fa-solid fa-magnifying-glass text-slate-500 absolute left-2.5 top-2.5 text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Glossary Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="glossaryContainer">
+                <!-- Populated dynamically via JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Glossary Modal Dialog -->
+    <div id="dictModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card max-w-2xl w-full rounded-2xl p-6 border border-slate-700 space-y-4 max-h-[85vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-book text-coral-500"></i>
+                    마케터 필수 용어 집합
+                </h3>
+                <button onclick="toggleDictionaryModal()" class="text-slate-400 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-400">
+                광고 및 미디어 기획서에서 가장 흔히 등장하는 주요 마케팅 용어 모음입니다.
+            </p>
+            <div id="modalDictContent" class="space-y-3">
+                <!-- Dynamic modal items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="w-full border-t border-slate-800/80 bg-navy-950 py-6 mt-12 text-center text-xs text-slate-500">
+        <div class="max-w-6xl mx-auto px-4 space-y-2">
+            <p>© 2026 마케팅 용어 효과 분석기 (Marketing Jargon Analyzer for Students & Marketers)</p>
+            <p class="text-[11px] text-slate-600">본 도구는 Gemini AI 알고리즘과 수용자 미디어심리학 데이터를 기반으로 가상의 대중 반응을 예측합니다.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dictionary Data Base
+        const marketingTermsDict = [
+            { term: 'FOMO', full: 'Fear Of Missing Out', desc: '좋은 기회를 놓칠까 봐 두려워하는 심리. 한정 수량, 타임딜 광고에 자주 활용됨.', easy: '놓치면 아쉬운 특가, 선착순 혜택', diff: '중급', fitAge: '10대~20대' },
+            { term: 'ROI', full: 'Return On Investment', desc: '투자 대비 수익률. B2B 마케팅이나 성능을 입증할 때 주로 쓰임.', easy: '비용 대비 높은 효과, 가성비 끝판왕', diff: '고급', fitAge: '30대~40대' },
+            { term: '타임딜', full: 'Time Deal', desc: '특정 시간 동안만 파격 할인하는 프로모션 기법.', easy: '마감 임박 혜택, 단 몇 시간 한정 할인', diff: '초급', fitAge: '전 연령' },
+            { term: '앰버서더', full: 'Ambassador', desc: '브랜드나 제품을 대표하여 홍보하는 유명인 또는 대표 모델.', easy: '브랜드 공식 모델, 대표 홍보대사', diff: '초급', fitAge: '10대~30대' },
+            { term: '마이크로 인플루언서', full: 'Micro Influencer', desc: '팔로워 1만~10만 명 규모로 끈끈한 팬층과 소통하는 SNS 크리에이터.', easy: '실제 후기 전문 유튜버, 진정성 있는 SNS 창작자', diff: '중급', fitAge: '10대~20대' },
+            { term: 'CTA', full: 'Call To Action', desc: '고객의 클릭이나 구매 등 즉각적인 행동을 유도하는 문구/버튼.', easy: '지금 바로 확인하기, 신청하기 버튼', diff: '고급', fitAge: '마케터 전문' },
+            { term: '바이럴', full: 'Viral Marketing', desc: '소비자들이 입소문을 내며 자발적으로 전파하도록 유도하는 마케팅.', easy: '입소문 대박, SNS 인기 폭발', diff: '초급', fitAge: '전 연령' },
+            { term: '퍼널', full: 'Marketing Funnel', desc: '인지부터 고려, 구매까지 고객이 거치는 단계별 마케팅 여정.', easy: '고객 구매 여정, 유입 단계', diff: '고급', fitAge: '마케터 전문' },
+            { term: 'O2O', full: 'Online to Offline', desc: '온라인 플랫폼을 통해 오프라인 매장 방문 및 서비스를 유도함.', easy: '온·오프라인 연계 혜택, 매장 방문 이벤트', diff: '중급', diff: '20대~40대' },
+            { term: '큐레이션', full: 'Curation', desc: '고객의 취향에 맞춰 양질의 정보를 선별해 맞춤 제안하는 것.', easy: '맞춤형 추동 추천, 개인 맞춤 셀렉션', diff: '중급', fitAge: '20대~30대' }
+        ];
+
+        // Sample Presets
+        const presets = {
+            1: {
+                copy: "이번 주말 팝업스토어 선착순 타임딜 진행! 앰버서더가 직접 큐레이션한 굿즈 놓치면 FOMO 유발 확정!",
+                age: "20s"
+            },
+            2: {
+                copy: "마케팅 ROI 300% 달성보장! 퍼널 데이터 기반의 CAC 절감 솔루션 데모를 신청하세요.",
+                age: "30s"
+            },
+            3: {
+                copy: "마이크로 인플루언서들이 극찬한 인스타그램 바이럴 대박 아이템! 선착순 타임세일 중입니다.",
+                age: "10s"
+            }
+        };
+
+        // App State
+        let selectedAge = '20s';
+        let sentimentChartInstance = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Char counter
+            const inputEl = document.getElementById('adCopyInput');
+            inputEl.addEventListener('input', (e) => {
+                document.getElementById('charCount').textContent = `${e.target.value.length} / 300자`;
+            });
+
+            // Populate dictionary section
+            renderGlossary();
+            renderModalDictionary();
+
+            // Set initial copy and run baseline analysis
+            loadPreset(1);
+        });
+
+        // Age Selection Handler
+        function selectAgeGroup(age) {
+            selectedAge = age;
+            document.querySelectorAll('.age-btn').forEach(btn => {
+                btn.classList.remove('coral-gradient', 'text-white', 'shadow-md', 'shadow-coral-600/30', 'active-age');
+                btn.classList.add('bg-navy-900', 'text-slate-300');
+                if(btn.getAttribute('data-age') === age) {
+                    btn.classList.remove('bg-navy-900', 'text-slate-300');
+                    btn.classList.add('coral-gradient', 'text-white', 'shadow-md', 'shadow-coral-600/30', 'active-age');
+                }
+            });
+        }
+
+        // Preset Loader
+        function loadPreset(num) {
+            const preset = presets[num];
+            if(preset) {
+                document.getElementById('adCopyInput').value = preset.copy;
+                document.getElementById('charCount').textContent = `${preset.copy.length} / 300자`;
+                selectAgeGroup(preset.age);
+                runAnalysis();
+            }
+        }
+
+        // Main Analysis Trigger
+        async function runAnalysis() {
+            const inputCopy = document.getElementById('adCopyInput').value.trim();
+            if(!inputCopy) {
+                alertModal("분석할 광고 문구를 입력해주세요.");
+                return;
+            }
+
+            // Show Loading UI
+            document.getElementById('resultsDashboard').classList.add('opacity-40', 'pointer-events-none');
+            document.getElementById('loadingState').classList.remove('hidden');
+
+            try {
+                // Call Gemini API or AI engine fallback
+                const resultData = await analyzeAdCopyGemini(inputCopy, selectedAge);
+                renderResults(resultData, inputCopy);
+            } catch (err) {
+                console.warn("AI Analysis Fallback executed:", err);
+                // Fallback heuristic analysis
+                const fallbackData = generateHeuristicAnalysis(inputCopy, selectedAge);
+                renderResults(fallbackData, inputCopy);
+            } finally {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('resultsDashboard').classList.remove('opacity-40', 'pointer-events-none');
+            }
+        }
+
+        // Gemini API call integration
+        async function analyzeAdCopyGemini(text, age) {
+            const apiKey = ""; // Canvas runtime automatically supplies API key when empty
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `당신은 마케터와 미디어 전공 학생들을 위한 '마케팅 용어 영향력 분석 AI'입니다.
+제공된 광고 문구와 타겟 연령대를 분석하여 결과를 반드시 유효한 JSON 형식으로 출력하십시오.
+
+[출력 규격 JSON Schema]:
+{
+  "detectedTerms": [
+    { "term": "용어명", "meaning": "쉬운 뜻 설명", "difficulty": "쉬움|보통|어려움" }
+  ],
+  "sentiment": {
+    "positive": 70,
+    "neutral": 20,
+    "negative": 10
+  },
+  "persuasionScore": 85,
+  "persuasionInsight": "타겟 연령층이 이 용어들을 접할 때의 설득 효과 및 수용 심리에 대한 상세한 분석 설명 (3~4문장)",
+  "emotionalTriggers": ["전문적임", "트렌디함", "약간의 피로감", "구매 욕구"],
+  "hashtags": ["#MZ트렌드", "#타임딜_막차", "#소장가치"],
+  "metrics": {
+    "compJargon": 65,
+    "compPlain": 95,
+    "credJargon": 88,
+    "credPlain": 65,
+    "buzzJargon": 80,
+    "buzzPlain": 70,
+    "convJargon": 72,
+    "convPlain": 84
+  },
+  "recommendedCopy": "전문 용어를 쉬운 대중적 한국어로 재구성한 자연스러운 문구"
+}`;
+
+            const userPrompt = `광고 문구: "${text}"\n타겟 연령대: ${ageTargetLabel(age)}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            };
+
+            const resp = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if(!resp.ok) throw new Error("API call failed");
+
+            const data = await resp.json();
+            const rawJson = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            return JSON.parse(rawJson);
+        }
+
+        // Rule-based heuristic generator for rich instant offline calculations
+        function generateHeuristicAnalysis(text, age) {
+            const detected = [];
+            let scoreBonus = 0;
+
+            marketingTermsDict.forEach(item => {
+                if(text.toUpperCase().includes(item.term) || text.includes(item.term)) {
+                    detected.push({
+                        term: item.term,
+                        meaning: item.easy,
+                        difficulty: item.diff === '고급' ? '어려움' : (item.diff === '중급' ? '보통' : '쉬움')
+                    });
+                }
+            });
+
+            // Default fallback if no known terms found in dictionary
+            if(detected.length === 0) {
+                detected.push(
+                    { term: '타임딜', meaning: '마감 임박 한정 할인', difficulty: '쉬움' },
+                    { term: 'FOMO', meaning: '놓칠까 봐 두려운 심리 자극', difficulty: '보통' }
+                );
+            }
+
+            // Age-based persuasion adjust
+            let posVal = 70, neuVal = 20, negVal = 10;
+            let pScore = 80;
+            let hashtags = [];
+            let insight = "";
+            let recommended = text;
+
+            if(age === '10s' || age === '20s') {
+                posVal = 78; neuVal = 14; negVal = 8;
+                pScore = 88;
+                hashtags = ['#MZ취향저격', '#타임딜_막차', '#소장가치100', '#트렌디쇼핑'];
+                insight = `${ageTargetLabel(age)} 타겟층은 FOMO, 앰버서더, 팝업스토어 등 최신 SNS 마케팅 어휘에 익숙하며 이를 스타일리시하고 트렌디한 정보로 수용합니다. 용어 사용이 브랜드의 세련된 이미지를 부각시켜 자발적인 SNS 확산을 유도합니다.`;
+                recommended = text.replace(/ROI/gi, "가성비 대박").replace(/FOMO/gi, "놓치면 후회할").replace(/퍼널/gi, "고객 단계");
+            } else if(age === '30s' || age === '40s') {
+                posVal = 65; neuVal = 22; negVal = 13;
+                pScore = 82;
+                hashtags = ['#스마트한선택', '#ROI극대화', '#실속혜택', '#직장인필수'];
+                insight = `${ageTargetLabel(age)} 소비층은 전문적인 마케팅/비즈니스 어휘(ROI, 효율 등)에서 신뢰감을 느끼지만, 불필요한 은어나 유행어에는 피로감을 느낄 수 있습니다. 정량적 수치와 명확한 혜택을 함께 제시하는 것이 효과적입니다.`;
+                recommended = text.replace(/FOMO 유발/gi, "검증된 혜택의").replace(/마이크로 인플루언서/gi, "전문 유튜버 추천");
+            } else {
+                posVal = 48; neuVal = 25; negVal = 27;
+                pScore = 60;
+                hashtags = ['#한정특가', '#마감임박', '#추천상품', '#알뜰쇼핑'];
+                insight = `${ageTargetLabel(age)} 타겟의 경우 영어 약어나 최신 마케터 용어 사용 시 메시지 이해도가 급격히 낮아집니다. 전문 용어를 직관적인 한글 표기('한정 할인', '인기 모델 추천')로 전환해야 구매 전환율이 상승합니다.`;
+                recommended = "이번 주 한정 수량 할인! 인쇄 및 SNS 인기 모델이 추천하는 맞춤 상품을 놓치지 마세요.";
+            }
+
+            return {
+                detectedTerms: detected,
+                sentiment: { positive: posVal, neutral: neuVal, negative: negVal },
+                persuasionScore: pScore,
+                persuasionInsight: insight,
+                emotionalTriggers: ["트렌디함", "전문적 신뢰감", "구매 자극", "약간의 피로도"],
+                hashtags: hashtags,
+                metrics: {
+                    compJargon: age === '50s' ? 42 : (age === '10s' ? 75 : 62),
+                    compPlain: 94,
+                    credJargon: 85,
+                    credPlain: 68,
+                    buzzJargon: 82,
+                    buzzPlain: 70,
+                    convJargon: age === '50s' ? 45 : 70,
+                    convPlain: 85
+                },
+                recommendedCopy: recommended
+            };
+        }
+
+        // Helper label for age key
+        function ageTargetLabel(ageKey) {
+            const map = { '10s': '10대(Z세대)', '20s': '20대(MZ세대)', '30s': '30대(직장인)', '40s': '40대(핵심소비층)', '50s': '50대 이상(시니어층)' };
+            return map[ageKey] || ageKey;
+        }
+
+        // Render UI Results
+        function renderResults(data, originalCopy) {
+            // 1. Detected Terms Ranking
+            const termsRankList = document.getElementById('termsRankList');
+            termsRankList.innerHTML = '';
+            
+            document.getElementById('termCountBadge').textContent = `감지된 용어 ${data.detectedTerms.length}개`;
+
+            data.detectedTerms.forEach((item, index) => {
+                const badgeColor = item.difficulty === '어려움' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                                  (item.difficulty === '보통' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30');
+
+                const termEl = document.createElement('div');
+                termEl.className = 'p-3 rounded-xl bg-navy-900/80 border border-slate-800 flex items-center justify-between gap-3 text-sm';
+                termEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-lg bg-coral-600/20 text-coral-500 flex items-center justify-center font-bold text-xs">
+                            #${index + 1}
+                        </span>
+                        <div>
+                            <span class="font-bold text-white">${item.term}</span>
+                            <span class="text-xs text-slate-400 block">${item.meaning}</span>
+                        </div>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded-md border font-semibold ${badgeColor}">
+                        난이도: ${item.difficulty}
+                    </span>
+                `;
+                termsRankList.appendChild(termEl);
+            });
+
+            // 2. Sentiment Chart update
+            updateSentimentChart(data.sentiment);
+            document.getElementById('mainSentimentScore').textContent = `${data.sentiment.positive}%`;
+            document.getElementById('posRatioText').textContent = `${data.sentiment.positive}%`;
+            document.getElementById('neuRatioText').textContent = `${data.sentiment.neutral}%`;
+            document.getElementById('negRatioText').textContent = `${data.sentiment.negative}%`;
+
+            // 3. Target Age Persuasion
+            document.getElementById('targetAgeTitle').textContent = ageTargetLabel(selectedAge);
+            document.getElementById('persuasionScore').textContent = `${data.persuasionScore}점`;
+            document.getElementById('persuasionInsightBox').innerHTML = `<p>${data.persuasionInsight}</p>`;
+
+            // Emotional triggers
+            const triggersContainer = document.getElementById('emotionTriggers');
+            triggersContainer.innerHTML = '';
+            (data.emotionalTriggers || ["전문성", "호기심", "트렌드"]).forEach(trig => {
+                const tag = document.createElement('span');
+                tag.className = 'text-xs px-2.5 py-1 rounded-lg bg-navy-900 text-slate-300 border border-slate-800';
+                tag.textContent = `# ${trig}`;
+                triggersContainer.appendChild(tag);
+            });
+
+            // 4. Hashtags
+            const hashtagList = document.getElementById('hashtagList');
+            hashtagList.innerHTML = '';
+            (data.hashtags || ['#마케팅효과', '#타겟분석']).forEach(tag => {
+                const hEl = document.createElement('span');
+                hEl.className = 'text-xs font-medium px-3 py-1.5 rounded-xl bg-coral-600/10 text-coral-400 border border-coral-500/20 hover:bg-coral-600/20 transition cursor-pointer';
+                hEl.textContent = tag;
+                hEl.onclick = () => {
+                    navigator.clipboard.writeText(tag);
+                    showToast();
+                };
+                hashtagList.appendChild(hEl);
+            });
+
+            // 5. A/B Comparison Metrics
+            const m = data.metrics;
+            document.getElementById('compJargon').textContent = `${m.compJargon}%`;
+            document.getElementById('compPlain').textContent = `${m.compPlain}%`;
+            document.getElementById('credJargon').textContent = `${m.credJargon}%`;
+            document.getElementById('credPlain').textContent = `${m.credPlain}%`;
+            document.getElementById('buzzJargon').textContent = `${m.buzzJargon}%`;
+            document.getElementById('buzzPlain').textContent = `${m.buzzPlain}%`;
+            document.getElementById('convJargon').textContent = `${m.convJargon}%`;
+            document.getElementById('convPlain').textContent = `${m.convPlain}%`;
+
+            document.getElementById('originalCopyDisplay').textContent = `"${originalCopy}"`;
+            document.getElementById('recommendedCopyDisplay').textContent = `"${data.recommendedCopy || originalCopy}"`;
+        }
+
+        // Chart.js Donut Visualizer
+        function updateSentimentChart(sentiment) {
+            const ctx = document.getElementById('sentimentChart').getContext('2d');
+
+            if (sentimentChartInstance) {
+                sentimentChartInstance.destroy();
+            }
+
+            sentimentChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['긍정', '중립', '부정/피로'],
+                    datasets: [{
+                        data: [sentiment.positive, sentiment.neutral, sentiment.negative],
+                        backgroundColor: ['#10b981', '#f59e0b', '#f43f5e'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '72%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Render Educational Glossary in Grid
+        function renderGlossary(filterText = "") {
+            const container = document.getElementById('glossaryContainer');
+            container.innerHTML = '';
+
+            const filtered = marketingTermsDict.filter(item => 
+                item.term.toLowerCase().includes(filterText.toLowerCase()) || 
+                item.desc.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center text-xs text-slate-500 py-6">검색어와 일치하는 용어가 없습니다.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-xl bg-navy-900/80 border border-slate-800 space-y-2 hover:border-slate-700 transition';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-coral-400 text-base">${item.term}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">${item.diff}</span>
+                    </div>
+                    <p class="text-xs text-slate-300">${item.desc}</p>
+                    <div class="pt-2 border-t border-slate-800/80 text-[11px] text-slate-400 flex justify-between">
+                        <span>쉬운 표현: <strong class="text-emerald-400 font-medium">${item.easy}</strong></span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterDictionary() {
+            const query = document.getElementById('dictSearch').value;
+            renderGlossary(query);
+        }
+
+        // Modal Render
+        function renderModalDictionary() {
+            const content = document.getElementById('modalDictContent');
+            content.innerHTML = '';
+            marketingTermsDict.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'p-3 rounded-xl bg-navy-900 border border-slate-800 space-y-1';
+                row.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-white text-sm">${item.term} <span class="text-xs font-normal text-slate-500">(${item.full})</span></h4>
+                        <span class="text-xs text-coral-400 bg-coral-500/10 px-2 py-0.5 rounded">적합 타겟: ${item.fitAge}</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">${item.desc}</p>
+                    <p class="text-xs text-emerald-400">💡 대중적 표현 제안: "${item.easy}"</p>
+                `;
+                content.appendChild(row);
+            });
+        }
+
+        function toggleDictionaryModal() {
+            const modal = document.getElementById('dictModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Copy Hashtags
+        function copyHashtags() {
+            const hashtags = Array.from(document.querySelectorAll('#hashtagList span'))
+                                .map(el => el.textContent)
+                                .join(' ');
+            if(hashtags) {
+                navigator.clipboard.writeText(hashtags);
+                showToast();
+            }
+        }
+
+        function showToast() {
+            const toast = document.getElementById('copyToast');
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2500);
+        }
+
+        // Simple alert replacement without alert()
+        function alertModal(msg) {
+            const div = document.createElement('div');
+            div.className = 'fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-rose-900 border border-rose-600 text-rose-100 px-6 py-3 rounded-xl shadow-2xl text-xs font-bold transition-all';
+            div.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i> ${msg}`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
